@@ -49,3 +49,83 @@ Role of Nameservers
 | -- caching        | Caches data from previous dont have its own zone |
 | -- forwarder      | Perform queries on behalf of many client, builds large cache |
 
+
+#### Authoritative servers
+Master server is truly authoritative for a zone, Master server loads the data from the disk.
+Slave server loads the master servers address on boot, and gets the data of master through the zone transfer
+operation
+A Stub server is a special kind of server that only caches name server information
+It's fine for a single machine to act as a master for one zone, and slave for the rest of the zones
+
+A caching only name server loads the address of root server on boot, and caches the rest of the queries
+caching servers and not authoritative for any zone except localhost
+
+### Recursive and non-recursive DNS
+If a non recursive dns has a answer in the cache then it will return the answer for the query. But if it doesnt
+know the answer for the query then it will simply refer you to other authoritative server which might know the 
+answer.
+Authoritative servers are non recursive servers
+
+For security reasons, a organizations externally accessible name servers should always be non recursive
+
+Caching the queries increases efficiency, since cached queris are almost free
+
+The cached result can be served for TTL (Time to live) which is specified in the master server file
+
+DNS has also implemented negative caching. That is, they remember when a query fails, and they do not repeat the query
+until the negative caching TTL value has expired.
+
+## Name server Resource Records
+
+### Zone parser commands
+Zone parser commands are used to make zone files more readable and easire to maintain
+Once read none of these parser commands are part of zone's data.
+
+Three commands ($ORIGIN, $INCLUDE, $TTL)
+As the name server reads the zone file, it adds the default domain ($ORIGIN) for all those entries which are not 
+fully qualified domain
+
+### Resource Records
+The SOA record
+The SOA records begins the beginning of a zone, a group of resouce records located at a same place within DNS namespace
+Two zones for a DNS namespace: forward translationand reverse translation
+
+srikanthk.in         IN          SOA            ns1.srikanthk.in.            hostmaster.srikanthk.in. (
+                     2024050200 ; Serial Numnber
+                     10800      ; Refresh timeout (3 hrs)
+                     1200       ; Retry timeout   (20 minutes)
+                     36000000   ; Expire          (40+ days)
+                     3600       ; Minimum         (1 hr)
+                     )
+
+Bloated serial number problem: What if you set the serial number to a very high value
+
+- **Refresh**: How often a slave server should check on the master for a update
+- **Retry**: If master doesn't respond after retry slave will again try
+- **Expire**: The slaves will serve the domains authoritative in abscence of master
+- **Minimum**: Time to live for negative cache
+
+The NS record
+This record defines the name server records for a zone
+Extra servers in the child are OK until atleast one of the childs address is in the parents zone file
+
+```conf
+                    IN          NS              172.130.12.12
+                    IN          NS              172.130.2.2
+```
+
+The A record
+This record maps a given Name to a IP address
+
+```conf
+jenkins             IN          A               172.17.0.3
+```
+
+The PTR record
+This record maps reverse maps a IP address to a domain name
+
+```conf
+1                   IN          PTR             ns2.srikanthk.in
+```
+
+
