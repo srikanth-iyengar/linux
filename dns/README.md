@@ -128,4 +128,12 @@ This record maps reverse maps a IP address to a domain name
 1                   IN          PTR             ns2.srikanthk.in
 ```
 
+# Bind Specific things
+Bind the Berkeley Internet Name Domain System, is a open source software package by Internet System Consortium (ISC)
+for linux, windows and macOS
 
+## Components of BIND
+- **Named:** A name server daemon which can answer client queries
+- **Resolver LIB:** A resolver library which queries servers on behalf of users
+- **CLI**: nslookup, dig, drill
+- **RNDC**: A utility program to manager to manage dns remotely
