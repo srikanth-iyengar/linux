@@ -115,3 +115,93 @@ Systemd is not a single daemon. [This](https://0pointer.de/blog) blog posts tell
 true, dont judge me 😄) different binaries
 
 Systemd heavily depends on linux kernel so it is not compatible with Free BSD or for sake any UNIX like systems, atleast for next 5 yrs
+
+### Units and unit files
+An entity managed by systemd is known generically as a unit.
+A unit can be a "service, socket, watched filesystem path, startup target, or a wormwhole into alternate universe"
+
+So now lets look at the unit file syntax 😜
+
+```service
+[Unit]
+Description=fast remote file copy program daemon
+ConditionPathExists=/etc/rsyncd.conf
+[Service]
+ExecStart=/usr/bin/rsync --daemon --no-detach
+[Install]
+WantedBy=multi-user.target
+```
+If you figured it out,yeah that it looks similar to the MS-DOS .ini file format, this is the reason why systemd 
+recieved so much hate
+
+Unit files can live in different places. /usr/lib/systemd/system is the main place where packages deposit their unit files
+on some systems it is /lib/systemd/system instead. And your custom configuration can go in /etc/systemd/system
+There's also a /run/systemd/system thats a scratch area for transient units 🤯, So much to take on
+
+So systemd looks for all these directories, so they're pretty much same, in case of conflict /etc/systemd gets higher
+priority
+
+```service
+[Unit]
+Description=The nginx HTTP and reverse proxy server
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+PIDFile=/run/nginx.pid
+ExecStartPre=/usr/bin/rm -f /run/nginx.pid
+ExecStartPre=/usr/sbin/nginx -t
+ExecStart=/usr/sbin/nginx
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=process
+KillSignal=SIGQUIT
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+This is a bit complex service of systemd. The startup command is expected to exit and the daemon continues to work in bg
+
+So for god for sake reason you want to update the existing unit files DONT DO IT, JUST BE NICE, If you want to shoot yourself
+then please go ahead.
+
+The correct way to override the existing unit files configuration is to create a folder called unit-file.d/
+and create some shit.conf file. Then override your configs
+
+We cannot override Install section of a service file
+
+**One important thing you should keep in mind that systemd allows systemd allows to repeat a key multiple times in a 
+single unit file, they form a list and are all active simultaneously, if you want to really override the conf then you
+should first set the key to a empty value first**
+
+Systemd has many architectural implications, and adopting it is not simple for teams building linux distributions
+
+Systemd has some glue left to be backwards compatible with trad init
+
+
+Easter EGG 🥚: In CentOS or Red Hat Linux still run the /etc/rc.d/rc.local script at boot time if we configure it to
+be executable
+
+In theory we can still use the hack scripts, but act like a grown up man and use systemd like a chad 🪴
+
+
+
+
+## Shutting down physical systems
+
+The halt command performs essetial duties required to shutdown the system, halt logs shutdown, kills non essential 
+process, flushes cached filesystem blocks to disk, and then halts kernel
+
+Reboot does the same thing but except it doesn't halt the system instead reboot
+
+shutdown is a layer of halt and reboot, shutdown does nothing of technical value than halt or reboot.
+Feel free to ignore if you dnt have a multi user system
+
+
+## 3 Godly rules of linux debuggin
+**📓 Remember with great power comes great responsibility 📓**
+1. Dont just debug, restore the system to a well known good state,
+2. Bring the system up, to just get a root shell and debug interactively
+3. Boot a seperate image, and mount the sick filesystem and investigate from there
