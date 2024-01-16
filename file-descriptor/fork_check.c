@@ -4,7 +4,9 @@
 #include <unistd.h>
 
 int main() {
+
   int fd = open("../file.db", O_RDONLY | O_CLOEXEC);
+
   int pid = fork();
   if (pid == -1) {
     printf("Error forking the process");
