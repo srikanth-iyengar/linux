@@ -86,3 +86,11 @@ When a signal is recived of of the two things happen
 2. If not then the kernel takes some default action on behalf of the process. the default action varies from signal to signal
 
 Specifying handler for a routine for a signal is known as catching the signal, just a jargon
+Obviously when the handler completes, execution restarts from the point at which the signal was rcvd 🤯
+
+To prevent the signals from arriving, programs can request that they have either blocked or ignored
+
+A signal that is previously ignore is simly discarded and the signal which was previously blocked is queued for delivery, but kernel doesnt required process to to act until the signal is unblocked
+
+| # | Name | Description                      | Default    | Can Catch? | Can Block? | Dump Core? |
+| 1 | HUP  | Hangup                           | Terminate  |  m
