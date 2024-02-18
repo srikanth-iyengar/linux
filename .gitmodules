@@ -1,3 +1,0 @@
-[submodule "dns/bind9"]
-	path = dns/bind9
-	url = git@github.com:/srikanth-iyengar/bind9.git

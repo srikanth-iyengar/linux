@@ -1,11 +1,59 @@
-# For use with Github Actions to override plantuml execution.
----
-INHERIT: mkdocs_local.yml
+site_name: Miguel's manuscripts # Change this to your site name
+site_description: The HTML rendition of Obsidian's Vault
+site_url: https://jmpicnic.github.io/obsidian-docs/ # Change this to your site URL
+repo_url: https://github.com/jmpicnic/obsidian-docs
+site_author: Miguel Pinilla
+copyright: |
+  Copyright: © Salduba Technologies,
+  Licensed under the <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><u>Creative Commons License CC BY-NC-SA 4.0</u></a>
+theme:
+    name: 'material'
+    logo: assets/meta/favicons.png
+    favicon: assets/meta/favicons.png
+    font:
+        text: Ubuntu
+        code: Ubuntu Mono
+    language: en
+    palette:
 
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      accent: light blue
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+    features:
+        - navigation.indexes
+        - navigation.top
+        - navigation.tabs
+        - navigation.tabs.sticky
+        - navigation.expand
+#        - navigation.footer
+        - search.suggest
+        - search.highlight
+
+# Exclude
+exclude_docs: |
+  hidden
+  **/Index.md
+
+
+# Extensions
+# IMPORTANT: KEEP IN SYNC WITH mkdocs.yml EXCEPT THE PLANTUML JAR LOCATION
 markdown_extensions:
   - footnotes
   - nl2br
   - attr_list
+  # https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/#markdown-in-html
   - md_in_html
   - meta
   - smarty
@@ -50,10 +98,11 @@ plugins:
   - meta-descriptions
   - ezlinks:
       wikilinks: true
+  - tags:
+      tags_file: tags.md
   - callouts
   - glightbox:
       auto_caption: true
-
 extra_javascript:
    - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 extra_css:
@@ -62,7 +111,6 @@ extra_css:
     - assets/css/custom_attributes.css
     - assets/css/customization.css
     - assets/css/draft-watermark.css
-
 extra:
   draftMark: |
     &nbsp;

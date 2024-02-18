@@ -1,55 +1,46 @@
----
-# Pick your own name that is unique in your repo 
 name: mkdocs-publish
-on: 
+
+on:
   push:
     branches:
-     # or any branch you want
-     - main
-  # Convenient for testing
-  workflow_dispatch: 
+      - main
+  workflow_dispatch:
 
-# The GITHUB_TOKEN permissions to be able to write to the gh-pages environment.
 permissions:
   contents: write
   pages: write
   id-token: write
-jobs: 
-  # This job builds the docs and publishes them to a GHA artifact 
+
+jobs:
   mkdocs-build:
-    name: Build mkdocs 
-    runs-on:
-      ubuntu-latest
+    name: Build mkdocs
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Build Documents 
+      - name: Build Documents
         id: build-docs
-        # See https://github.com/jmpicnic/actions-gen-mkdocs for details 
-        uses: jmpicnic/actions-gen-mkdocs@v1 
+        uses: jmpicnic/actions-gen-mkdocs@v1
         with:
           docs-dir: .
           site-target-dir: site
           requirements-file-name: requirements.txt
           mkdocs-file-name: mkdocs.yml
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2 
-        with: 
+        uses: actions/upload-artifact@v2
+        with:
+          name: mkdocs-site
           path: ${{ steps.build-docs.outputs.generated-site }}
+
   deploy:
-    # Add a dependency to the build job 
     needs: mkdocs-build
-    # Specify runner + deployment step
     runs-on: ubuntu-latest
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    # (this can be omitted if the permissions are at the top)
-    permissions: 
-      pages: write # to deploy to Pages 
-      id-token: write # to verify the deployment originates from an appropriate source
-    # Deploy to the github-pages environment
+    permissions:
+      pages: write
+      id-token: write
     environment:
-      name: github-pages 
-      url: ${{ steps.deployment.outputs.page_url }} 
-    steps: 
+      name: github-pages
+      url: ${{ needs.mkdocs-build.outputs.artifacts_url }}
+    steps:
       - name: Deploy to GitHub Pages
-        id: deployment uses: actions/deploy-pages@v2 
+        uses: actions/deploy-pages@v2
